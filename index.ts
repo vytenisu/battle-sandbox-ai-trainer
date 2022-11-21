@@ -1,8 +1,9 @@
+import {runBattle} from './lib/utils/runner'
 import './lib/constants/global'
-import {connectToController, resetMap, runTick} from './lib/services/controller'
-import {ECommand} from './lib/types/commands'
+import {connectToController} from './lib/services/controller'
 import {ELogLevel, info, init} from './lib/utils/log'
 import packageInfo from './package.json'
+import {BaselineBot} from './lib/utils/baseline-bot'
 
 init('AI Trainer', ELogLevel.verbose)
 
@@ -12,19 +13,5 @@ info(`by ${packageInfo.author.name}`)
   await connectToController()
 
   // DEBUG
-
-  await resetMap()
-
-  // cm{i}, cr{i}
-
-  // setInterval(
-  //   async () =>
-  //     await runTick([
-  //       {
-  //         type: ECommand.MOVE,
-  //         payload: {sourceId: 'cm0', direction: BOTTOM_LEFT},
-  //       },
-  //     ]),
-  //   1000,
-  // )
+  await runBattle(BaselineBot, BaselineBot, 1)
 })()

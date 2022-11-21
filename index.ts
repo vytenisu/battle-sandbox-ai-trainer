@@ -1,20 +1,30 @@
-// import {connectToMapGeneration} from './lib/generator'
-// import {launchController} from './lib/controller'
-// import {ELogLevel, info, init} from './lib/utils/log'
-// import packageInfo from './package.json'
-// import {launchInterface} from './lib/interface'
+import './lib/constants/global'
+import {connectToController, resetMap, runTick} from './lib/services/controller'
+import {ECommand} from './lib/types/commands'
+import {ELogLevel, info, init} from './lib/utils/log'
+import packageInfo from './package.json'
 
-// init('Controller', ELogLevel.verbose)
+init('AI Trainer', ELogLevel.verbose)
 
-// info(`${packageInfo.name} ${packageInfo.version}`)
-// info(`by ${packageInfo.author.name}`)
-// ;(async () => {
-//   await connectToMapGeneration()
-//   launchController()
-//   launchInterface()
-//   // setInterval(() => {
-//   //   getNewMap()
-//   // }, 7000)
-// })()
+info(`${packageInfo.name} ${packageInfo.version}`)
+info(`by ${packageInfo.author.name}`)
+;(async () => {
+  await connectToController()
 
-// // TODO: NOT FINISHED
+  // DEBUG
+
+  await resetMap()
+
+  // cm{i}, cr{i}
+
+  // setInterval(
+  //   async () =>
+  //     await runTick([
+  //       {
+  //         type: ECommand.MOVE,
+  //         payload: {sourceId: 'cm0', direction: BOTTOM_LEFT},
+  //       },
+  //     ]),
+  //   1000,
+  // )
+})()

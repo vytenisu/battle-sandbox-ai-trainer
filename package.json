@@ -1,0 +1,60 @@
+{
+  "name": "battle-sandbox-ai-trainer",
+  "version": "1.0.0",
+  "description": "Battle sandbox AI trainer POC",
+  "main": "dist/index.js",
+  "bin": {
+    "npm-dts": "cli.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run lint && npm run build && npm run fix && npm run test",
+    "test": "jest --forceExit --detectOpenHandles",
+    "testSync": "jest --runInBand --forceExit --detectOpenHandles",
+    "lint": "tslint -c ./tslint.json -p ./tsconfig.json -t stylish ./lib/**/*.ts",
+    "build": "webpack",
+    "exec": "node ./cli.js run",
+    "fix": "node ./scripts/fixCliLineEndings.js"
+  },
+  "homepage": "https://github.com/vytenisu/battle-sandbox-ai-trainer",
+  "bugs": {
+    "url": "https://github.com/vytenisu/battle-sandbox-ai-trainer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vytenisu/battle-sandbox-ai-trainer.git"
+  },
+  "keywords": [
+    "battle",
+    "sandbox",
+    "ai",
+    "trainer",
+    "pos",
+    "ai",
+    "deep learning",
+    "neuro",
+    "network"
+  ],
+  "author": {
+    "name": "Vytenis Urbonavičius",
+    "url": "https://github.com/vytenisu"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/screeps": "^3.3.0",
+    "@types/websocket": "^1.0.5",
+    "@types/winston": "2.4.4",
+    "license-webpack-plugin": "4.0.2",
+    "ts-loader": "9.3.1",
+    "ts-node": "10.8.1",
+    "tslint": "6.1.3",
+    "typescript": "4.7.4",
+    "webpack": "5.73.0",
+    "webpack-cli": "4.10.0",
+    "webpack-node-externals": "^3.0.0",
+    "json-loader": "^0.5.7"
+  },
+  "dependencies": {
+    "websocket": "^1.0.34",
+    "winston": "3.7.2"
+  }
+}

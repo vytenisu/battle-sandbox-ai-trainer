@@ -1,3 +1,4 @@
+import {ISample} from './../types/network'
 import {ECommand} from './../types/commands'
 import {getCreepById, getEnemyCreeps, getMyCreeps} from './map'
 import {Position} from './position'
@@ -8,9 +9,8 @@ import {ICommand} from '../types/commands'
 import {Random} from './random'
 import {DIRECTIONS} from '../constants/screeps'
 import {IBot, runBattle} from './runner'
-import {ISample} from '../types/network'
 import ProgressBar from 'progress'
-import {info} from './log'
+import {info, warn} from './log'
 
 const getNonDeterministicNeuroBot = (
   net: Network,
@@ -100,7 +100,7 @@ export const generateSamples = async (
   logContext: string,
   maxIterations?: number,
   verbose = 1,
-) => {
+): Promise<ISample[]> => {
   let samples = []
 
   const bar = verbose
@@ -136,6 +136,19 @@ export const generateSamples = async (
     const accuracy = 100 - Math.round((filteredSamples.length / attempts) * 100)
 
     info(`Network accuracy: ${accuracy}%`)
+  }
+
+  if (!filteredSamples.length) {
+    warn(`No ${logContext} samples were generated! Retrying...`)
+
+    return await generateSamples(
+      net,
+      opponentBot,
+      attempts,
+      logContext,
+      maxIterations,
+      verbose,
+    )
   }
 
   return filteredSamples

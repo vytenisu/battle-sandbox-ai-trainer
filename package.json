@@ -40,6 +40,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/mkdirp": "^1.0.2",
     "@types/screeps": "^3.3.0",
     "@types/websocket": "^1.0.5",
     "@types/winston": "2.4.4",
@@ -57,6 +58,7 @@
     "@tensorflow/tfjs-node-gpu": "^4.1.0",
     "chartjs-node-canvas": "^4.1.6",
     "chrome-launcher": "^0.15.1",
+    "mkdirp": "^1.0.4",
     "websocket": "^1.0.34",
     "winston": "3.7.2"
   }

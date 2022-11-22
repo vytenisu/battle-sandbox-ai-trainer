@@ -14,6 +14,7 @@ export const LEFT = 7
 export const TOP_LEFT = 8
 
 export const ATTACK_POWER = 30
+export const CREEP_LIFE_TIME = 1500
 
 // Custom
 export const MAX_BODY_SIZE = 50

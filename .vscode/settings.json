@@ -1,4 +1,7 @@
 {
+  "terminal.integrated.env.windows": {
+    "PATH": "C:/Python27;${env:PATH}"
+  },
   "todohighlight.keywords": [
     {
       "text": "TODO:",
@@ -44,7 +47,10 @@
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "cSpell.words": [
     "bitbucket",
+    "CHANN",
+    "Crossentropy",
     "devtool",
+    "dtype",
     "MAVGS",
     "neuro",
     "printf",

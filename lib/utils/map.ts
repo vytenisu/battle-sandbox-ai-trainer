@@ -1,5 +1,6 @@
 import {IPosition} from '../types/common'
 import {IFeed} from '../types/feed'
+import {EObjectType, ICreep} from '../types/simplified-screeps'
 import {Position} from './position'
 
 export const getInvertedMap = (map: IFeed) => {
@@ -20,3 +21,11 @@ export const isSwamp = (pos: IPosition, map: IFeed) =>
 
 export const getTerrain = (pos: IPosition, map: IFeed) =>
   map.terrain[Position.hash(pos)]?.terrain ?? null
+
+export const getCreepById = (id: string, map: IFeed): ICreep =>
+  map.objects.find(obj => obj.objectType === EObjectType.CREEP && obj.id === id)
+
+export const getCreepByPosition = (pos: IPosition, map: IFeed): ICreep =>
+  map.objects.find(
+    obj => obj.objectType === EObjectType.CREEP && Position.equal(pos, obj.pos),
+  )

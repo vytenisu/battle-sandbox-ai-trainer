@@ -40,7 +40,7 @@ client.on('connect', connection => {
   })
 
   connection.on('close', () => {
-    error('Connection to controller service was closed!')
+    error('Connection to controller service was closed! Will retry...')
     retry()
   })
 
@@ -60,7 +60,7 @@ export const resetMap = async (): Promise<IControllerResponse> =>
     currentResolve = resolve
 
     if (currentConnection?.connected) {
-      verbose('Sending controller reset command...')
+      verbose('Resetting controller')
 
       const payload: IControllerCommandReset = {
         type: EControllerCommand.RESET,
@@ -84,7 +84,7 @@ export const runTick = async (
     currentResolve = resolve
 
     if (currentConnection?.connected) {
-      verbose('Updating controller state...')
+      verbose('Updating controller state')
 
       const payload: IControllerCommandTick = {
         type: EControllerCommand.TICK,
@@ -95,7 +95,6 @@ export const runTick = async (
 
       debug(stringPayload)
       currentConnection.sendUTF(stringPayload)
-      verbose('Updated controller state!')
     } else {
       error(
         'Attempting to make changes to map while not connected to controller service!',

@@ -14,8 +14,8 @@ info(`by ${packageInfo.author.name}`)
 
   await trainNetwork({
     modelPath: MODEL_PATH,
-    trainingDataSize: 1, // 50
-    validationDataSize: 1, // 10
+    trainingDataSize: 50,
+    validationDataSize: 10,
     batchSize: 5,
     epochs: 50,
     strategy: ETrainingStrategy.AGAINST_BASELINE,

@@ -14,10 +14,12 @@ import {info, warn} from './log'
 import {appendFileSync} from 'fs'
 import {resolve} from 'path'
 
+// TODO: create a mode which allows to simulate remaining steps using Baseline bot
+
 const getNonDeterministicNeuroBot = (
   net: Network,
   onCommandGenerated: (sample: ISample) => void,
-  targetIteration = 10,
+  targetIteration = 10, // TODO: instead of target iteration, make a random step when first 2 creeps are near each other
 ) => {
   let iteration = 0
 

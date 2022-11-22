@@ -23,14 +23,14 @@ info(`by ${packageInfo.author.name}`)
   while (true) {
     iteration++
 
-    info(`Running training iteration ${iteration}...`)
+    info(`Running training iteration ${iteration} ...`)
 
     await trainNetwork({
       modelPath: MODEL_PATH,
-      trainingDataSize: 1, // 100
-      validationDataSize: 1, // 20
-      batchSize: 10,
-      epochs: 10,
+      trainingDataSize: 100,
+      validationDataSize: 20,
+      batchSize: 5,
+      epochs: 50,
       strategy: ETrainingStrategy.AGAINST_BASELINE,
     })
 

@@ -16,6 +16,7 @@ export interface ITrainNetworkProps {
   validationDataSize: number
   epochs: number
   batchSize: number
+  net?: Network
 }
 
 export const trainNetwork = async ({
@@ -25,8 +26,13 @@ export const trainNetwork = async ({
   validationDataSize,
   epochs,
   batchSize,
+  net,
 }: ITrainNetworkProps) => {
-  const net = new Network(modelPath)
+  if (!net) {
+    await new Promise(resolve => {
+      net = new Network(modelPath, () => resolve(null))
+    })
+  }
 
   const opponentBot =
     strategy === ETrainingStrategy.AGAINST_BASELINE
@@ -61,4 +67,6 @@ export const trainNetwork = async ({
   await net.train(trainingData, validationData, epochs)
 
   await net.saveModel(modelPath)
+
+  return net
 }

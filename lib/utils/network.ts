@@ -4,7 +4,7 @@ import {IFeed} from './../types/feed'
 import {ECommand, ICommand} from './../types/commands'
 import type TensorFlow from '@tensorflow/tfjs-node-gpu'
 import {resolve} from 'path'
-import {verbose} from './log'
+import {info, verbose} from './log'
 import mkdirp from 'mkdirp'
 import {INormalizedFeed} from '../types/network'
 import {NETWORK_CHANNELS} from '../constants/network'
@@ -37,7 +37,7 @@ export class Network {
   public async saveModel(modelPath: string) {
     await mkdirp(modelPath)
     await this.model.save(tf.io.fileSystem(modelPath))
-    verbose(`Saved model to ${modelPath}`)
+    info(`Saved model to ${modelPath}`)
   }
 
   private async loadModel(modelPath: string) {
@@ -45,7 +45,7 @@ export class Network {
       tf.io.fileSystem(resolve(modelPath, 'model.json')),
     )
 
-    verbose(`Loaded model from ${modelPath}`)
+    info(`Loaded model from ${modelPath}`)
   }
 
   private createModel() {
@@ -77,7 +77,7 @@ export class Network {
       ],
     })
 
-    verbose('Created new model')
+    info('Created new model')
   }
 
   private compileModel() {

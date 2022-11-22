@@ -23,3 +23,14 @@ export const BODY_PART_MAX_HITS = 100
 export const FATIGUE_LAND = 2
 export const FATIGUE_SWAMP = 10
 export const FATIGUE_MOVE = -2
+
+export const DIRECTIONS = [
+  TOP,
+  TOP_RIGHT,
+  RIGHT,
+  BOTTOM_RIGHT,
+  BOTTOM,
+  BOTTOM_LEFT,
+  LEFT,
+  TOP_LEFT,
+]

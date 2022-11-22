@@ -1,3 +1,4 @@
+import {INormalizedSample} from './../types/network'
 import {Position} from './position'
 import {IFeed} from './../types/feed'
 import {ECommand, ICommand} from './../types/commands'
@@ -8,17 +9,8 @@ import mkdirp from 'mkdirp'
 import {INormalizedFeed} from '../types/network'
 import {NETWORK_CHANNELS} from '../constants/network'
 import {getCreepById, getCreepByPosition} from './map'
-
-const DIRECTIONS = [
-  TOP,
-  TOP_RIGHT,
-  RIGHT,
-  BOTTOM_RIGHT,
-  BOTTOM,
-  BOTTOM_LEFT,
-  LEFT,
-  TOP_LEFT,
-]
+import {DIRECTIONS} from '../constants/screeps'
+import {existsSync} from 'fs'
 
 const tf: typeof TensorFlow = require('@tensorflow/tfjs-node-gpu')
 
@@ -26,7 +18,7 @@ export class Network {
   private model: TensorFlow.LayersModel
 
   constructor(modelPath?: string, onReady = () => {}) {
-    if (modelPath) {
+    if (modelPath && this.modelExists(modelPath)) {
       this.loadModel(modelPath).then(() => {
         this.compileModel()
         onReady()
@@ -36,6 +28,10 @@ export class Network {
       this.compileModel()
       onReady()
     }
+  }
+
+  private modelExists(modelPath: string) {
+    return existsSync(resolve(modelPath, 'model.json'))
   }
 
   public async saveModel(modelPath: string) {
@@ -135,8 +131,25 @@ export class Network {
     }
   }
 
-  private getDirection(outputIndex: number) {
-    return DIRECTIONS[outputIndex % DIRECTIONS.length]
+  public createDataset(data: INormalizedSample[], batchSize = 10) {
+    return tf.data.array(data).shuffle(batchSize).batch(10)
+  }
+
+  public async train(
+    trainingData: TensorFlow.data.Dataset<TensorFlow.TensorContainer>,
+    validationData: TensorFlow.data.Dataset<TensorFlow.TensorContainer>,
+    epochs = 10,
+    verbose = 1,
+  ) {
+    await this.model.fitDataset(trainingData, {
+      validationData,
+      epochs,
+      verbose,
+    })
+  }
+
+  private getDirection(outputIndex: number): DirectionConstant {
+    return DIRECTIONS[outputIndex % DIRECTIONS.length] as DirectionConstant
   }
 
   private getCommand(outputIndex: number) {

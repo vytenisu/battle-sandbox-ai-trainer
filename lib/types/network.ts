@@ -1,3 +1,6 @@
+import {ICommand} from './commands'
+import {IFeed} from './feed'
+
 export type INormalizedFeed = INormalizedRows[]
 
 export type INormalizedRows = INormalizedCell[]
@@ -32,3 +35,15 @@ export type IRawOutput = [
   attackLeft: number,
   attackTopLeft: number,
 ]
+
+export interface ISample {
+  map: IFeed
+  controlledCreepId: string
+  command: ICommand
+}
+
+export interface INormalizedSample {
+  [index: string]: INormalizedFeed | IRawOutput
+  xs: INormalizedFeed
+  ys: IRawOutput
+}

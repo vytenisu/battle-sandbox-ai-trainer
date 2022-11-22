@@ -1,14 +1,12 @@
 import {EObjectType, ICreep} from '../types/simplified-screeps'
 import {ECommand, ICommand} from './../types/commands'
 import {IFeed} from './../types/feed'
+import {getMyCreeps} from './map'
 import {getDirectionTo} from './path-finder'
 import {Position} from './position'
 
 export const BaselineBot = (map: IFeed): ICommand[] => {
-  const myCreeps = map.objects.filter(
-    obj => obj.objectType === EObjectType.CREEP && obj.my,
-  )
-
+  const myCreeps = getMyCreeps(map)
   const result: ICommand[] = []
 
   for (const creep of myCreeps) {

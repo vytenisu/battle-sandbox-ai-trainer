@@ -1,3 +1,4 @@
+import {normalizeSample} from './lib/utils/normalizer'
 import {runBattle} from './lib/utils/runner'
 import './lib/constants/global'
 import {connectToController, resetMap} from './lib/services/controller'
@@ -6,23 +7,33 @@ import packageInfo from './package.json'
 import {BaselineBot} from './lib/utils/baseline-bot'
 import './lib/utils/network' // For code suggestions only
 import {Network} from './lib/utils/network'
-import {normalize} from './lib/utils/normalizer'
+import {generateSamples} from './lib/utils/sample-generator'
+import {ETrainingStrategy, trainNetwork} from './lib/utils/trainer'
+import {MODEL_PATH} from './lib/constants/config'
 
-init('AI Trainer', ELogLevel.verbose)
+init('AI Trainer', ELogLevel.info)
 
 info(`${packageInfo.name} ${packageInfo.version}`)
 info(`by ${packageInfo.author.name}`)
 ;(async () => {
   await connectToController()
 
-  // DEBUG
-  const net = new Network()
+  let iteration = 0
 
-  const {map} = await resetMap()
-  const input = normalize(map, 'cm0')
+  while (true) {
+    iteration++
 
-  console.log(net.predict(input, map, 'cm0'))
+    info(`Running training iteration ${iteration}...`)
 
-  // DEBUG
-  // await runBattle(BaselineBot, BaselineBot, 1)
+    await trainNetwork({
+      modelPath: MODEL_PATH,
+      trainingDataSize: 1, // 100
+      validationDataSize: 1, // 20
+      batchSize: 10,
+      epochs: 10,
+      strategy: ETrainingStrategy.AGAINST_BASELINE,
+    })
+
+    info(`Training iteration ${iteration} is completed!`)
+  }
 })()

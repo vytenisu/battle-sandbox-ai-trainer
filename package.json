@@ -41,6 +41,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/mkdirp": "^1.0.2",
+    "@types/progress": "^2.0.5",
     "@types/screeps": "^3.3.0",
     "@types/websocket": "^1.0.5",
     "@types/winston": "2.4.4",
@@ -59,6 +60,7 @@
     "chartjs-node-canvas": "^4.1.6",
     "chrome-launcher": "^0.15.1",
     "mkdirp": "^1.0.4",
+    "progress": "^2.0.3",
     "websocket": "^1.0.34",
     "winston": "3.7.2"
   }

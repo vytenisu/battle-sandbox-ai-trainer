@@ -1,9 +1,17 @@
+import {ECommand, ICommand} from './../types/commands'
 import {FATIGUE_SWAMP} from './../constants/screeps'
-import {INormalizedCell, INormalizedFeed} from './../types/network'
+import {
+  INormalizedCell,
+  INormalizedFeed,
+  INormalizedSample,
+  IRawOutput,
+  ISample,
+} from './../types/network'
 import {IFeed} from './../types/feed'
-import {getCreepByPosition, isSwamp, isWall} from './map'
+import {getCreepById, getCreepByPosition, isSwamp, isWall} from './map'
 import {ICreep} from '../types/simplified-screeps'
 import {MAX_BODY_SIZE} from '../constants/screeps'
+import {Position} from './position'
 
 const BODY_PART_SCORE_K = 1.2
 const BODY_PART_SCORE_B = 1
@@ -73,6 +81,44 @@ export const normalize = (
 
   return normalizedFeed
 }
+
+export const normalizeResult = (command: ICommand, map: IFeed): IRawOutput => {
+  let direction: DirectionConstant = TOP
+
+  const {type} = command
+
+  if (type === ECommand.ATTACK) {
+    const sourceCreep = getCreepById(command.payload.sourceId, map)
+    const targetCreep = getCreepById(command.payload.targetId, map)
+    direction = Position.getDirection(sourceCreep.pos, targetCreep.pos)
+  } else {
+    direction = command.payload.direction
+  }
+
+  return [
+    Number(type === ECommand.MOVE && direction === TOP),
+    Number(type === ECommand.MOVE && direction === TOP_RIGHT),
+    Number(type === ECommand.MOVE && direction === RIGHT),
+    Number(type === ECommand.MOVE && direction === BOTTOM_RIGHT),
+    Number(type === ECommand.MOVE && direction === BOTTOM),
+    Number(type === ECommand.MOVE && direction === BOTTOM_LEFT),
+    Number(type === ECommand.MOVE && direction === LEFT),
+    Number(type === ECommand.MOVE && direction === TOP_LEFT),
+    Number(type === ECommand.ATTACK && direction === TOP),
+    Number(type === ECommand.ATTACK && direction === TOP_RIGHT),
+    Number(type === ECommand.ATTACK && direction === RIGHT),
+    Number(type === ECommand.ATTACK && direction === BOTTOM_RIGHT),
+    Number(type === ECommand.ATTACK && direction === BOTTOM),
+    Number(type === ECommand.ATTACK && direction === BOTTOM_LEFT),
+    Number(type === ECommand.ATTACK && direction === LEFT),
+    Number(type === ECommand.ATTACK && direction === TOP_LEFT),
+  ]
+}
+
+export const normalizeSample = (sample: ISample): INormalizedSample => ({
+  xs: normalize(sample.map, sample.controlledCreepId),
+  ys: normalizeResult(sample.command, sample.map),
+})
 
 const getCreepBodyPartScore = (creep: ICreep, bodyPartType: BodyPartConstant) =>
   creep.body.reduce(

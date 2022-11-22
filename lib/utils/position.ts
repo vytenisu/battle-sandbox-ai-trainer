@@ -88,4 +88,30 @@ export class Position {
   public static getOptimisticDistance(a: IPosition, b: IPosition) {
     return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y))
   }
+
+  public static getDirection(
+    from: IPosition,
+    to: IPosition,
+  ): DirectionConstant {
+    const diffX = to.x - from.x
+    const diffY = to.y - from.y
+
+    if (diffX === 0 && diffY < 0) {
+      return TOP
+    } else if (diffX > 0 && diffY < 0) {
+      return TOP_RIGHT
+    } else if (diffX > 0 && diffY === 0) {
+      return RIGHT
+    } else if (diffX > 0 && diffY > 0) {
+      return BOTTOM_RIGHT
+    } else if (diffX === 0 && diffY > 0) {
+      return BOTTOM
+    } else if (diffX < 0 && diffY > 0) {
+      return BOTTOM_LEFT
+    } else if (diffX < 0 && diffY === 0) {
+      return LEFT
+    }
+
+    return TOP_LEFT
+  }
 }

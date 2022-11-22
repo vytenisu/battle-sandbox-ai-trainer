@@ -29,3 +29,9 @@ export const getCreepByPosition = (pos: IPosition, map: IFeed): ICreep =>
   map.objects.find(
     obj => obj.objectType === EObjectType.CREEP && Position.equal(pos, obj.pos),
   )
+
+export const getMyCreeps = (map: IFeed) =>
+  map.objects.filter(obj => obj.objectType === EObjectType.CREEP && obj.my)
+
+export const getEnemyCreeps = (map: IFeed) =>
+  map.objects.filter(obj => obj.objectType === EObjectType.CREEP && !obj.my)

@@ -11,6 +11,7 @@ import {
 
 const RETRY_DELAY = 3000
 
+let close = false
 let currentConnectionResolve: (data: void) => void = () => {}
 let currentResolve: (data: IControllerResponse) => void = () => {}
 let currentConnection: connection | null = null
@@ -40,8 +41,11 @@ client.on('connect', connection => {
   })
 
   connection.on('close', () => {
-    error('Connection to controller service was closed! Will retry...')
-    retry()
+    error('Connection to controller service was closed!')
+    if (!close) {
+      error('Will retry...')
+      retry()
+    }
   })
 
   connection.on('message', message => {
@@ -107,3 +111,8 @@ export const connectToController = () =>
     currentConnectionResolve = resolve
     connect()
   })
+
+export const closeConnection = () => {
+  close = true
+  currentConnection.close()
+}

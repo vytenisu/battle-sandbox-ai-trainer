@@ -14,17 +14,19 @@ import {info, warn} from './log'
 
 const getNonDeterministicNeuroBot = (
   net: Network,
-  onNewCommandGenerated: (sample: ISample) => void,
+  onCommandGenerated: (sample: ISample) => void,
+  targetIteration = 10,
 ) => {
-  let firstIteration = true
+  let iteration = 0
+
   const realBot = NeuroBot(net, true)
 
   return (map: IFeed): ICommand[] => {
     const commands = realBot(map)
 
-    if (firstIteration) {
-      firstIteration = false
+    iteration++
 
+    if (iteration === targetIteration) {
       // Remove random command in order to randomize it
 
       const randomCommandIndex = Random.getInteger(0, commands.length - 1)
@@ -78,7 +80,7 @@ const getNonDeterministicNeuroBot = (
         }
       }
 
-      onNewCommandGenerated({
+      onCommandGenerated({
         controlledCreepId: selectedCreepId,
         command,
         map: JSON.parse(JSON.stringify(map)),
@@ -92,6 +94,8 @@ const getNonDeterministicNeuroBot = (
     return commands.filter(Boolean)
   }
 }
+
+// Scroll samples until at least 1 pair of own and enemy creeps are near
 
 export const generateSamples = async (
   net: Network,

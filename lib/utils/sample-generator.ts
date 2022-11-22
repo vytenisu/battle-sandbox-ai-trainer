@@ -11,6 +11,8 @@ import {DIRECTIONS} from '../constants/screeps'
 import {IBot, runBattle} from './runner'
 import ProgressBar from 'progress'
 import {info, warn} from './log'
+import {appendFileSync} from 'fs'
+import {resolve} from 'path'
 
 const getNonDeterministicNeuroBot = (
   net: Network,
@@ -102,6 +104,7 @@ export const generateSamples = async (
   opponentBot: IBot,
   attempts: number,
   logContext: string,
+  modelPath: string,
   maxIterations?: number,
   verbose = 1,
 ): Promise<ISample[]> => {
@@ -139,6 +142,11 @@ export const generateSamples = async (
 
     const accuracy = 100 - Math.round((filteredSamples.length / attempts) * 100)
 
+    appendFileSync(
+      resolve(modelPath, logContext + '_accuracy.log'),
+      `\n${accuracy}`,
+    )
+
     info(`Network accuracy: ${accuracy}%`)
   }
 
@@ -150,6 +158,7 @@ export const generateSamples = async (
       opponentBot,
       attempts,
       logContext,
+      modelPath,
       maxIterations,
       verbose,
     )

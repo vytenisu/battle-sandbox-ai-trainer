@@ -70,9 +70,14 @@ export class Network {
         tf.layers.avgPool2d({poolSize: [5, 5], strides: [1, 1]}),
         tf.layers.flatten(),
         tf.layers.dense({
+          units: 25,
+          activation: 'tanh',
+        }),
+        tf.layers.dense({
           units: 16,
           kernelInitializer: 'varianceScaling',
-          activation: 'softmax',
+          // activation: 'softmax',
+          activation: 'sigmoid',
         }),
       ],
     })
@@ -83,7 +88,8 @@ export class Network {
   private compileModel() {
     this.model.compile({
       optimizer: tf.train.adam(),
-      loss: tf.metrics.categoricalCrossentropy,
+      // loss: tf.metrics.categoricalCrossentropy,
+      loss: tf.metrics.meanSquaredError,
       metrics: ['accuracy'],
     })
 

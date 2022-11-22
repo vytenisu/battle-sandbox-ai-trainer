@@ -17,7 +17,7 @@ info(`by ${packageInfo.author.name}`)
     trainingDataSize: 50,
     validationDataSize: 10,
     batchSize: 5,
-    epochs: 50,
+    epochs: 1,
     strategy: ETrainingStrategy.AGAINST_BASELINE,
   })
 

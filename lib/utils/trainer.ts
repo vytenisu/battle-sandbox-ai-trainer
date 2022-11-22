@@ -44,6 +44,7 @@ export const trainNetwork = async ({
     opponentBot,
     trainingDataSize,
     'training',
+    modelPath,
   )
 
   const normalizedTrainingSamples = trainingSamples.map(normalizeSample)
@@ -55,6 +56,7 @@ export const trainNetwork = async ({
     opponentBot,
     validationDataSize,
     'validation',
+    modelPath,
   )
 
   const normalizedValidationSamples = validationSamples.map(normalizeSample)

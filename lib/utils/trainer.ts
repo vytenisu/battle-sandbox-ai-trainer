@@ -1,9 +1,11 @@
+import {ITrainCallback} from './../types/network'
 import {ISample} from '../types/network'
 import {BaselineBot, getCreepCommand} from './baseline-bot'
 import {Network} from './network'
 import {NeuroBot} from './neuro-bot'
 import {normalizeSample} from './normalizer'
 import {generateCopySamples, generateSamples} from './sample-generator'
+import {info, verbose} from './log'
 
 export enum ETrainingStrategy {
   COPY_BASELINE,
@@ -17,6 +19,7 @@ export interface ITrainNetworkProps {
   trainingDataSize: number
   validationDataSize: number
   epochs: number
+  patience: number
   batchSize: number
   net?: Network
 }
@@ -27,6 +30,7 @@ export const trainNetwork = async ({
   trainingDataSize,
   validationDataSize,
   epochs,
+  patience,
   batchSize,
   net,
 }: ITrainNetworkProps) => {
@@ -85,8 +89,35 @@ export const trainNetwork = async ({
     batchSize,
   )
 
-  await net.train(trainingData, validationData, epochs)
-  await net.saveModel(modelPath)
+  let bestMetric: number | null = null
+
+  const save: ITrainCallback = {
+    setParams() {},
+    setModel() {},
+    onTrainBegin() {},
+    onEpochBegin() {},
+    onBatchBegin() {},
+    onBatchEnd() {},
+    async onEpochEnd(_, metrics) {
+      const metric = metrics['val_loss']
+
+      let needSave = false
+      let oldBestMetric = bestMetric
+
+      if (!bestMetric || bestMetric > metric) {
+        bestMetric = metric
+        needSave = true
+      }
+
+      if (needSave) {
+        info(`Validation loss decreased from ${oldBestMetric} to ${metric}`)
+        await net.saveModel(modelPath)
+      }
+    },
+    onTrainEnd() {},
+  }
+
+  await net.train(trainingData, validationData, epochs, patience, [save])
 
   return net
 }

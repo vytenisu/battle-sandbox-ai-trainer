@@ -121,30 +121,38 @@ export const generateCopySamples = async (
   let samples = []
 
   const bar = verbose
-    ? new ProgressBar(`Generating ${logContext} COPY samples [:bar] :percent`, {
-        total: amount,
-        width: 20,
-      })
+    ? new ProgressBar(
+        `Borrowing ${logContext} samples from baseline [:bar] :percent`,
+        {
+          total: amount,
+          width: 20,
+        },
+      )
     : null
 
   for (let i = 0; i < amount; i++) {
     const {map} = await resetMap()
 
-    const CONTROLLED_CREEP_ID = 'cm0'
+    const myCreeps = getMyCreeps(map)
+    const myCreepIds = myCreeps.map(({id}) => id)
 
-    const creep = getCreepById(CONTROLLED_CREEP_ID, map)
-    const command = getCreepCommand(creep, map)
+    let first = true
 
-    const sample: ISample = {
-      map,
-      command,
-      controlledCreepId: CONTROLLED_CREEP_ID,
-    }
+    for (const controlledCreepId of myCreepIds) {
+      const creep = getCreepById(controlledCreepId, map)
+      const command = getCreepCommand(creep, map)
+      const sample: ISample = {map, command, controlledCreepId}
+      samples.push(sample)
 
-    samples.push(sample)
+      if (verbose) {
+        bar.tick()
+      }
 
-    if (verbose) {
-      bar.tick()
+      if (first) {
+        first = false
+      } else {
+        i++
+      }
     }
   }
 

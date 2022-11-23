@@ -1,4 +1,4 @@
-import {INormalizedSample} from './../types/network'
+import {INormalizedSample, ITrainCallback} from './../types/network'
 import {Position} from './position'
 import {IFeed} from './../types/feed'
 import {ECommand, ICommand} from './../types/commands'
@@ -145,12 +145,12 @@ export class Network {
     trainingData: TensorFlow.data.Dataset<TensorFlow.TensorContainer>,
     validationData: TensorFlow.data.Dataset<TensorFlow.TensorContainer>,
     epochs = 10,
+    patience = 10,
+    additionalCallbacks: ITrainCallback[] = [], // Could not
     verbose = 1,
   ) {
-    // TODO: make early stop parameters configurable
-
     const earlyStop = tf.callbacks.earlyStopping({
-      patience: 3,
+      patience,
       minDelta: 0.001,
       mode: 'min',
       verbose: 1,
@@ -160,7 +160,7 @@ export class Network {
       validationData,
       epochs,
       verbose,
-      callbacks: [earlyStop],
+      callbacks: [earlyStop, ...additionalCallbacks],
     })
   }
 

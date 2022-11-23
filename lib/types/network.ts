@@ -1,3 +1,5 @@
+import type TensorFlow from '@tensorflow/tfjs-node-gpu'
+import {Mode} from 'mkdirp'
 import {ICommand} from './commands'
 import {IFeed} from './feed'
 
@@ -46,4 +48,15 @@ export interface INormalizedSample {
   [index: string]: INormalizedFeed | IRawOutput
   xs: INormalizedFeed
   ys: IRawOutput
+}
+
+export interface ITrainCallback {
+  setParams: () => void
+  setModel: (model: TensorFlow.LayersModel) => void
+  onTrainBegin: () => void
+  onEpochBegin: () => void
+  onBatchBegin: () => void
+  onBatchEnd: () => void
+  onEpochEnd: (epochNumber: number, accuracyInfo: any) => void
+  onTrainEnd: () => void
 }

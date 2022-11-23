@@ -7,7 +7,7 @@ import {normalizeSample} from './normalizer'
 import {generateCopySamples, generateSamples} from './sample-generator'
 import {info} from './log'
 import {resolve} from 'path'
-import {appendFileSync} from 'fs'
+import {appendFileSync, readFileSync, writeFileSync} from 'fs'
 
 export enum ETrainingStrategy {
   COPY_BASELINE,
@@ -53,12 +53,20 @@ export const trainNetwork = async ({
       1,
     )
 
-    validationSamples = await generateCopySamples(
-      getCreepCommand,
-      validationDataSize,
-      'validation',
-      1,
-    )
+    const cacheFilePath = resolve(modelPath, 'copy_validation_samples.json')
+
+    try {
+      validationSamples = JSON.parse(readFileSync(cacheFilePath, 'utf8'))
+    } catch (e) {
+      validationSamples = await generateCopySamples(
+        getCreepCommand,
+        validationDataSize,
+        'validation',
+        1,
+      )
+
+      writeFileSync(cacheFilePath, JSON.stringify(validationSamples), 'utf8')
+    }
   } else {
     const opponentBot =
       strategy === ETrainingStrategy.AGAINST_BASELINE

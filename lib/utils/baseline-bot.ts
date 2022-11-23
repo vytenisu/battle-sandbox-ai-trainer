@@ -20,7 +20,7 @@ export const BaselineBot = (map: IFeed): ICommand[] => {
   return result
 }
 
-const getCreepCommand = (creep: ICreep, map: IFeed): ICommand => {
+export const getCreepCommand = (creep: ICreep, map: IFeed): ICommand => {
   const target = getClosestOpponent(creep, map)
 
   if (Position.near(creep.pos, target.pos)) {

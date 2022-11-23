@@ -14,11 +14,11 @@ info(`by ${packageInfo.author.name}`)
 
   await trainNetwork({
     modelPath: MODEL_PATH,
-    trainingDataSize: 50,
-    validationDataSize: 10,
-    batchSize: 1,
-    epochs: 1,
-    strategy: ETrainingStrategy.AGAINST_BASELINE,
+    trainingDataSize: 1000,
+    validationDataSize: 200,
+    batchSize: 10,
+    epochs: 100,
+    strategy: ETrainingStrategy.COPY_BASELINE,
   })
 
   closeConnection()

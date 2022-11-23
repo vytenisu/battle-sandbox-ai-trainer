@@ -13,13 +13,13 @@ import ProgressBar from 'progress'
 import {info, warn} from './log'
 import {appendFileSync} from 'fs'
 import {resolve} from 'path'
-
-// TODO: create a mode which allows to simulate remaining steps using Baseline bot
+import {ICreep} from '../types/simplified-screeps'
+import {resetMap} from '../services/controller'
 
 const getNonDeterministicNeuroBot = (
   net: Network,
-  onCommandGenerated: (sample: ISample) => void,
-  targetIteration = 10, // TODO: instead of target iteration, make a random step when first 2 creeps are near each other
+  onCommandGenerated: (sample: ISample, originalSample: ISample) => void,
+  targetIteration = 1,
 ) => {
   let iteration = 0
 
@@ -34,7 +34,7 @@ const getNonDeterministicNeuroBot = (
       // Remove random command in order to randomize it
 
       const randomCommandIndex = Random.getInteger(0, commands.length - 1)
-      commands.splice(randomCommandIndex, 1)
+      const deletedCommands = commands.splice(randomCommandIndex, 1)
       const result = commands.filter(Boolean)
 
       // Find creep which is missing a command
@@ -84,11 +84,24 @@ const getNonDeterministicNeuroBot = (
         }
       }
 
-      onCommandGenerated({
-        controlledCreepId: selectedCreepId,
-        command,
-        map: JSON.parse(JSON.stringify(map)),
-      })
+      const clonedMap = JSON.parse(JSON.stringify(map))
+
+      const originalSample: ISample = deletedCommands.length
+        ? {
+            controlledCreepId: deletedCommands[0].payload.sourceId,
+            command: deletedCommands[0],
+            map: clonedMap,
+          }
+        : null
+
+      onCommandGenerated(
+        {
+          controlledCreepId: selectedCreepId,
+          command,
+          map: clonedMap,
+        },
+        originalSample,
+      )
 
       result.push(command)
 
@@ -99,7 +112,48 @@ const getNonDeterministicNeuroBot = (
   }
 }
 
-// Scroll samples until at least 1 pair of own and enemy creeps are near
+export const generateCopySamples = async (
+  getCreepCommand: (creep: ICreep, map: IFeed) => ICommand,
+  amount: number,
+  logContext: string,
+  verbose = 1,
+) => {
+  let samples = []
+
+  const bar = verbose
+    ? new ProgressBar(`Generating ${logContext} COPY samples [:bar] :percent`, {
+        total: amount,
+        width: 20,
+      })
+    : null
+
+  for (let i = 0; i < amount; i++) {
+    const {map} = await resetMap()
+
+    const CONTROLLED_CREEP_ID = 'cm0'
+
+    const creep = getCreepById(CONTROLLED_CREEP_ID, map)
+    const command = getCreepCommand(creep, map)
+
+    const sample: ISample = {
+      map,
+      command,
+      controlledCreepId: CONTROLLED_CREEP_ID,
+    }
+
+    samples.push(sample)
+
+    if (verbose) {
+      bar.tick()
+    }
+  }
+
+  if (verbose) {
+    bar.terminate()
+  }
+
+  return samples
+}
 
 export const generateSamples = async (
   net: Network,
@@ -175,6 +229,7 @@ const generateSample = async (
   maxIterations = 100,
 ): Promise<ISample | null> => {
   let potentialSample: ISample | null = null
+  let unchangedSample: ISample | null = null
 
   const baselineScore = await runBattle(
     NeuroBot(net),
@@ -182,8 +237,9 @@ const generateSample = async (
     maxIterations,
   )
   const alteredScore = await runBattle(
-    getNonDeterministicNeuroBot(net, newSample => {
+    getNonDeterministicNeuroBot(net, (newSample, oldSample) => {
       potentialSample = newSample
+      unchangedSample = oldSample
     }),
     opponentBot,
     maxIterations,
@@ -192,6 +248,6 @@ const generateSample = async (
   if (alteredScore > baselineScore) {
     return potentialSample
   } else {
-    return null
+    return unchangedSample
   }
 }

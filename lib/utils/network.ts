@@ -147,10 +147,20 @@ export class Network {
     epochs = 10,
     verbose = 1,
   ) {
+    // TODO: make early stop parameters configurable
+
+    const earlyStop = tf.callbacks.earlyStopping({
+      patience: 3,
+      minDelta: 0.001,
+      mode: 'min',
+      verbose: 1,
+    })
+
     await this.model.fitDataset(trainingData, {
       validationData,
       epochs,
       verbose,
+      callbacks: [earlyStop],
     })
   }
 

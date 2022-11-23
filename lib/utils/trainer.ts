@@ -1,10 +1,12 @@
-import {BaselineBot} from './baseline-bot'
+import {ISample} from '../types/network'
+import {BaselineBot, getCreepCommand} from './baseline-bot'
 import {Network} from './network'
 import {NeuroBot} from './neuro-bot'
 import {normalizeSample} from './normalizer'
-import {generateSamples} from './sample-generator'
+import {generateCopySamples, generateSamples} from './sample-generator'
 
 export enum ETrainingStrategy {
+  COPY_BASELINE,
   AGAINST_BASELINE,
   AGAINST_SELF,
 }
@@ -34,40 +36,56 @@ export const trainNetwork = async ({
     })
   }
 
-  const opponentBot =
-    strategy === ETrainingStrategy.AGAINST_BASELINE
-      ? BaselineBot
-      : NeuroBot(net)
+  let trainingSamples: ISample[]
+  let validationSamples: ISample[]
 
-  const trainingSamples = await generateSamples(
-    net,
-    opponentBot,
-    trainingDataSize,
-    'training',
-    modelPath,
-  )
+  if (strategy === ETrainingStrategy.COPY_BASELINE) {
+    trainingSamples = await generateCopySamples(
+      getCreepCommand,
+      trainingDataSize,
+      'training',
+      1,
+    )
+
+    validationSamples = await generateCopySamples(
+      getCreepCommand,
+      validationDataSize,
+      'validation',
+      1,
+    )
+  } else {
+    const opponentBot =
+      strategy === ETrainingStrategy.AGAINST_BASELINE
+        ? BaselineBot
+        : NeuroBot(net)
+
+    trainingSamples = await generateSamples(
+      net,
+      opponentBot,
+      trainingDataSize,
+      'training',
+      modelPath,
+    )
+
+    validationSamples = await generateSamples(
+      net,
+      opponentBot,
+      validationDataSize,
+      'validation',
+      modelPath,
+    )
+  }
 
   const normalizedTrainingSamples = trainingSamples.map(normalizeSample)
-
-  const trainingData = net.createDataset(normalizedTrainingSamples, batchSize)
-
-  const validationSamples = await generateSamples(
-    net,
-    opponentBot,
-    validationDataSize,
-    'validation',
-    modelPath,
-  )
-
   const normalizedValidationSamples = validationSamples.map(normalizeSample)
 
+  const trainingData = net.createDataset(normalizedTrainingSamples, batchSize)
   const validationData = net.createDataset(
     normalizedValidationSamples,
     batchSize,
   )
 
   await net.train(trainingData, validationData, epochs)
-
   await net.saveModel(modelPath)
 
   return net

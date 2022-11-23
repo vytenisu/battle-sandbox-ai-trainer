@@ -55,7 +55,7 @@ export class Network {
         tf.layers.conv2d({
           kernelSize: 5,
           filters: 4,
-          activation: 'elu',
+          activation: 'tanh',
           dtype: 'float32',
           inputShape: [50, 50, NETWORK_CHANNELS],
         }),
@@ -63,7 +63,7 @@ export class Network {
         tf.layers.conv2d({
           kernelSize: 5,
           filters: 16,
-          activation: 'elu',
+          activation: 'tanh',
         }),
         tf.layers.flatten(),
         tf.layers.dense({
@@ -79,7 +79,7 @@ export class Network {
 
   private compileModel() {
     this.model.compile({
-      optimizer: tf.train.adam(),
+      optimizer: tf.train.adam(0.001),
       loss: tf.metrics.categoricalCrossentropy,
       metrics: ['accuracy'],
     })

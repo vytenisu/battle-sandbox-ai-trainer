@@ -4,3 +4,4 @@ node_modules
 index.d.ts
 dist
 cache
+reference

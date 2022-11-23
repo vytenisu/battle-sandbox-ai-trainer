@@ -55,29 +55,31 @@ export class Network {
         tf.layers.conv2d({
           kernelSize: 5,
           filters: 4,
-          activation: 'elu',
-          dataFormat: 'channelsLast',
+          activation: 'relu',
           dtype: 'float32',
           inputShape: [50, 50, NETWORK_CHANNELS],
         }),
-        tf.layers.avgPool2d({poolSize: [2, 2], strides: [1, 1]}),
+        tf.layers.maxPool2d({poolSize: [2, 2], strides: [1, 1]}),
         tf.layers.conv2d({
           kernelSize: 5,
           filters: 16,
-          activation: 'elu',
-          dataFormat: 'channelsLast',
+          activation: 'relu',
         }),
-        tf.layers.avgPool2d({poolSize: [5, 5], strides: [1, 1]}),
+        tf.layers.maxPool2d({poolSize: [5, 5], strides: [1, 1]}),
+        tf.layers.conv2d({
+          kernelSize: 3,
+          filters: 16,
+          activation: 'relu',
+        }),
         tf.layers.flatten(),
         tf.layers.dense({
           units: 25,
-          activation: 'elu',
+          activation: 'relu',
         }),
         tf.layers.dense({
           units: 16,
           kernelInitializer: 'varianceScaling',
           activation: 'softmax',
-          // activation: 'sigmoid',
         }),
       ],
     })
@@ -89,7 +91,6 @@ export class Network {
     this.model.compile({
       optimizer: tf.train.adam(),
       loss: tf.metrics.categoricalCrossentropy,
-      // loss: tf.metrics.meanSquaredError,
       metrics: ['accuracy'],
     })
 
@@ -151,7 +152,6 @@ export class Network {
   ) {
     const earlyStop = tf.callbacks.earlyStopping({
       patience,
-      minDelta: 0.001,
       mode: 'min',
       verbose: 1,
     })

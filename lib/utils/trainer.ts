@@ -5,7 +5,9 @@ import {Network} from './network'
 import {NeuroBot} from './neuro-bot'
 import {normalizeSample} from './normalizer'
 import {generateCopySamples, generateSamples} from './sample-generator'
-import {info, verbose} from './log'
+import {info} from './log'
+import {resolve} from 'path'
+import {appendFileSync} from 'fs'
 
 export enum ETrainingStrategy {
   COPY_BASELINE,
@@ -100,6 +102,13 @@ export const trainNetwork = async ({
     onBatchEnd() {},
     async onEpochEnd(_, metrics) {
       const metric = metrics['val_loss']
+
+      for (const [metricName, metricValue] of Object.entries(metrics)) {
+        appendFileSync(
+          resolve(modelPath, `${metricName}.log`),
+          `\n${new Date().toISOString} --- ${metricValue}`,
+        )
+      }
 
       let needSave = false
       let oldBestMetric = bestMetric

@@ -207,11 +207,11 @@ export const generateSamples = async (
     const accuracy = 100 - Math.round((filteredSamples.length / attempts) * 100)
 
     appendFileSync(
-      resolve(modelPath, logContext + '_accuracy.log'),
+      resolve(modelPath, logContext + '_prediction_success_rate.log'),
       `\n${accuracy}`,
     )
 
-    info(`Network accuracy: ${accuracy}%`)
+    info(`Prediction success rate: ${accuracy}%`)
   }
 
   if (!filteredSamples.length) {

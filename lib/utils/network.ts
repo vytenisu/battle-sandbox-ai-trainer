@@ -71,13 +71,13 @@ export class Network {
         tf.layers.flatten(),
         tf.layers.dense({
           units: 25,
-          activation: 'tanh',
+          activation: 'elu',
         }),
         tf.layers.dense({
           units: 16,
           kernelInitializer: 'varianceScaling',
-          // activation: 'softmax',
-          activation: 'sigmoid',
+          activation: 'softmax',
+          // activation: 'sigmoid',
         }),
       ],
     })
@@ -88,8 +88,8 @@ export class Network {
   private compileModel() {
     this.model.compile({
       optimizer: tf.train.adam(),
-      // loss: tf.metrics.categoricalCrossentropy,
-      loss: tf.metrics.meanSquaredError,
+      loss: tf.metrics.categoricalCrossentropy,
+      // loss: tf.metrics.meanSquaredError,
       metrics: ['accuracy'],
     })
 

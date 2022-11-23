@@ -99,8 +99,6 @@ export const trainNetwork = async ({
     batchSize,
   )
 
-  let bestMetric: number | null = null
-
   const save: ITrainCallback = {
     setParams() {},
     setModel() {},
@@ -109,8 +107,6 @@ export const trainNetwork = async ({
     onBatchBegin() {},
     onBatchEnd() {},
     async onEpochEnd(_, metrics) {
-      const metric = metrics['val_loss']
-
       for (const [metricName, metricValue] of Object.entries(metrics)) {
         appendFileSync(
           resolve(modelPath, `${metricName}.log`),
@@ -118,18 +114,7 @@ export const trainNetwork = async ({
         )
       }
 
-      let needSave = false
-      let oldBestMetric = bestMetric
-
-      if (!bestMetric || bestMetric > metric) {
-        bestMetric = metric
-        needSave = true
-      }
-
-      if (needSave) {
-        info(`Validation loss decreased from ${oldBestMetric} to ${metric}`)
-        await net.saveModel(modelPath)
-      }
+      await net.saveModel(modelPath)
     },
     onTrainEnd() {},
   }

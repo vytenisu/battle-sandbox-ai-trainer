@@ -11,9 +11,9 @@ const exportedConfig = {
   },
   devtool: 'source-map',
   optimization: {
-    minimize: true,
+    // minimize: true,
   },
-  mode: 'production',
+  mode: 'development',
   externals: [nodeExternals()],
   plugins: [new LicenseWebpackPlugin()],
   resolve: {

@@ -18,7 +18,7 @@ info(`by ${packageInfo.author.name}`)
     validationDataSize: 300,
     batchSize: 10,
     epochs: 100,
-    patience: 10,
+    patience: 50,
     strategy: ETrainingStrategy.COPY_BASELINE,
   })
 

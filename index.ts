@@ -16,9 +16,9 @@ info(`by ${packageInfo.author.name}`)
     modelPath: MODEL_PATH,
     trainingDataSize: 1000,
     validationDataSize: 300,
-    batchSize: 10,
-    epochs: 10,
-    patience: 10,
+    batchSize: 100,
+    epochs: 100,
+    patience: 3,
     strategy: ETrainingStrategy.COPY_BASELINE,
   })
 

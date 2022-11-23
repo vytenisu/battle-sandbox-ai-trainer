@@ -50,7 +50,7 @@ export class Network {
 
   private createModel() {
     this.model = tf.sequential({
-      name: 'player',
+      name: 'bot',
       layers: [
         tf.layers.conv2d({
           kernelSize: 5,
@@ -62,20 +62,10 @@ export class Network {
         tf.layers.maxPool2d({poolSize: [2, 2], strides: [1, 1]}),
         tf.layers.conv2d({
           kernelSize: 5,
-          filters: 4,
-          activation: 'elu',
-        }),
-        tf.layers.maxPool2d({poolSize: [5, 5], strides: [1, 1]}),
-        tf.layers.conv2d({
-          kernelSize: 3,
           filters: 16,
           activation: 'elu',
         }),
         tf.layers.flatten(),
-        tf.layers.dense({
-          units: 25,
-          activation: 'tanh',
-        }),
         tf.layers.dense({
           units: 16,
           kernelInitializer: 'varianceScaling',

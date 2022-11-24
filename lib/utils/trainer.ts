@@ -3,11 +3,11 @@ import {ISample} from '../types/network'
 import {BaselineBot, getCreepCommand} from './baseline-bot'
 import {Network} from './network'
 import {NeuroBot} from './neuro-bot'
-import {normalizeSample} from './normalizer'
+import {balanceSamples, normalizeSample} from './normalizer'
 import {generateCopySamples, generateSamples} from './sample-generator'
-import {info} from './log'
 import {resolve} from 'path'
 import {appendFileSync, readFileSync, writeFileSync} from 'fs'
+import {info} from 'winston'
 
 export enum ETrainingStrategy {
   COPY_BASELINE,
@@ -58,12 +58,15 @@ export const trainNetwork = async ({
     try {
       validationSamples = JSON.parse(readFileSync(cacheFilePath, 'utf8'))
     } catch (e) {
-      validationSamples = await generateCopySamples(
+      const unbalancedValidationSamples = await generateCopySamples(
         getCreepCommand,
         validationDataSize,
         'validation',
         1,
       )
+
+      validationSamples = balanceSamples(unbalancedValidationSamples)
+      info('Generated validation samples: ', validationSamples.length)
 
       writeFileSync(cacheFilePath, JSON.stringify(validationSamples), 'utf8')
     }

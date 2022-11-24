@@ -1,9 +1,5 @@
-import {BaselineBot} from './lib/utils/baseline-bot'
-import {NeuroBot} from './lib/utils/neuro-bot'
-import {runBattle} from './lib/utils/runner'
-import {Network} from './lib/utils/network'
 import './lib/constants/global'
-import {closeConnection, connectToController} from './lib/services/controller'
+import {connectToController} from './lib/services/controller'
 import {ELogLevel, info, init} from './lib/utils/log'
 import packageInfo from './package.json'
 import {ETrainingStrategy, trainNetwork} from './lib/utils/trainer'
@@ -19,7 +15,7 @@ info(`by ${packageInfo.author.name}`)
   await trainNetwork({
     modelPath: MODEL_PATH,
     trainingDataSize: 100,
-    validationDataSize: 1000,
+    validationDataSize: 3000,
     batchSize: 1,
     epochs: 1,
     patience: 1,
@@ -27,6 +23,72 @@ info(`by ${packageInfo.author.name}`)
   })
 
   process.exit(1)
+
+  // Verify quality of samples
+
+  // const samples = await generateCopySamples(
+  //   getCreepCommand,
+  //   1000,
+  //   'quality verification',
+  // )
+
+  // const normalizedSamples = samples.map(normalizeSample)
+
+  // let amounts: {[index: string]: number} = {}
+
+  // const commandMap: {[i: number]: string} = {
+  //   0: 'moveTop',
+  //   1: 'moveTopRight',
+  //   2: 'moveRight',
+  //   3: 'moveBottomRight',
+  //   4: 'moveBottom',
+  //   5: 'moveBottomLeft',
+  //   6: 'moveLeft',
+  //   7: 'moveTopLeft',
+  //   8: 'attackTop',
+  //   9: 'attackTopRight',
+  //   10: 'attackRight',
+  //   11: 'attackBottomRight',
+  //   12: 'attackBottom',
+  //   13: 'attackBottomLeft',
+  //   14: 'attackLeft',
+  //   15: 'attackTopLeft',
+  // }
+
+  // normalizedSamples.forEach(({ys}) => {
+  //   ys.forEach((y, i) => {
+  //     amounts[commandMap[i]] = amounts[commandMap[i]] ?? 0
+  //     amounts[commandMap[i]] += y
+  //   })
+
+  //   if (ys.every(y => !y)) {
+  //     amounts['-'] = amounts['-'] ?? 0
+  //     amounts['-']++
+  //   }
+  // })
+
+  // console.log(amounts)
+  // console.log('Total: ', samples.length)
+
+  // const balancedSamples = balanceSamples(samples)
+  // const normalizedBalancedSamples = balancedSamples.map(normalizeSample)
+
+  // amounts = {}
+
+  // normalizedBalancedSamples.forEach(({ys}) => {
+  //   ys.forEach((y, i) => {
+  //     amounts[commandMap[i]] = amounts[commandMap[i]] ?? 0
+  //     amounts[commandMap[i]] += y
+  //   })
+
+  //   if (ys.every(y => !y)) {
+  //     amounts['-'] = amounts['-'] ?? 0
+  //     amounts['-']++
+  //   }
+  // })
+
+  // console.log(amounts)
+  // console.log('Total balanced: ', balancedSamples.length)
 
   // To test run this:
 

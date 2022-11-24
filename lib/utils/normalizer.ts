@@ -16,6 +16,37 @@ import {Position} from './position'
 const BODY_PART_SCORE_K = 1.2
 const BODY_PART_SCORE_B = 1
 
+export const balanceSamples = (samples: ISample[]) => {
+  let amounts = new Array(16).fill(0)
+
+  let normalizedResults: IRawOutput[] = []
+
+  samples.forEach((sample, index) => {
+    normalizedResults.push(normalizeResult(sample.command, sample.map))
+    const selectedAction = normalizedResults[index].indexOf(1)
+
+    if (selectedAction !== -1) {
+      amounts[selectedAction]++
+    }
+  })
+
+  const maxAmount = Math.min(...amounts)
+  const remainingAmounts = new Array(16).fill(maxAmount)
+
+  const balancedSamples: ISample[] = []
+
+  samples.forEach((sample, index) => {
+    const selectedAction = normalizedResults[index].indexOf(1)
+
+    if (remainingAmounts[selectedAction]) {
+      balancedSamples.push(sample)
+      remainingAmounts[selectedAction]--
+    }
+  })
+
+  return balancedSamples
+}
+
 export const normalize = (
   map: IFeed,
   controlledCreepId: string,
@@ -66,10 +97,12 @@ export const normalize = (
         plain,
         swamp,
         wall,
-        attackScore,
-        moveScore,
         control,
         friendly,
+        friendly ? 0 : 1,
+        creep ? 0 : 1,
+        attackScore,
+        moveScore,
         fatigue,
         ticksToLive,
       ]

@@ -7,14 +7,20 @@ export type INormalizedFeed = INormalizedRows[]
 
 export type INormalizedRows = INormalizedCell[]
 
+// Required filters = 6 (terrain, ownership, danger, movement, support, life )
 export type INormalizedCell = [
-  plain: number,
-  swamp: number,
-  wall: number,
+  // enum
+  plain: number, // boolean
+  swamp: number, // boolean
+  wall: number, // boolean
+  // enum
+  me: number, // boolean
+  friend: number, // boolean
+  enemy: number, // boolean
+  noCreep: number, // boolean
+  // normalized integers
   attackScore: number,
   moveScore: number,
-  control: number,
-  friendly: number,
   fatigue: number,
   ticksToLive: number,
 ]

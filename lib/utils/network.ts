@@ -11,7 +11,6 @@ import {NETWORK_CHANNELS} from '../constants/network'
 import {getCreepById, getCreepByPosition} from './map'
 import {DIRECTIONS} from '../constants/screeps'
 import {existsSync} from 'fs'
-import {SymbolicTensor, Tensor, Tensor4D} from '@tensorflow/tfjs-node-gpu'
 
 const tf: typeof TensorFlow = require('@tensorflow/tfjs-node-gpu')
 
@@ -53,14 +52,26 @@ export class Network {
     this.model = tf.sequential({
       name: 'bot',
       layers: [
+        // Compression
+        tf.layers.conv2d({
+          name: 'compress',
+          kernelSize: 1,
+          filters: 6,
+          strides: 1,
+          activation: 'relu',
+          dtype: 'float32',
+          inputShape: [50, 50, NETWORK_CHANNELS],
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.reLU(),
+
+        // 2D map interpretation
         tf.layers.conv2d({
           name: 'c1',
           kernelSize: 3,
           filters: 8,
           strides: 1,
-          activation: 'elu',
-          dtype: 'float32',
-          inputShape: [50, 50, NETWORK_CHANNELS],
+          activation: 'relu',
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
@@ -70,8 +81,7 @@ export class Network {
           kernelSize: 3,
           filters: 32,
           strides: 1,
-          activation: 'elu',
-          dtype: 'float32',
+          activation: 'relu',
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
@@ -81,33 +91,23 @@ export class Network {
           kernelSize: 5,
           filters: 38,
           strides: 1,
-          activation: 'elu',
-          dtype: 'float32',
+          activation: 'relu',
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
         tf.layers.flatten(),
+
+        // Generalization
         tf.layers.dropout({rate: 0.3}),
-        tf.layers.dense({
-          units: 16,
-          activation: 'tanh',
-        }),
-        tf.layers.dense({
-          units: 16,
-          activation: 'tanh',
-        }),
-        tf.layers.dense({
-          units: 16,
-          activation: 'tanh',
-        }),
-        tf.layers.dense({
-          units: 16,
-          activation: 'tanh',
-        }),
-        tf.layers.dense({
-          units: 16,
-          activation: 'sigmoid',
-        }),
+
+        // Decision making
+        tf.layers.dense({units: 16, activation: 'tanh'}),
+        tf.layers.dense({units: 16, activation: 'tanh'}),
+        tf.layers.dense({units: 16, activation: 'tanh'}),
+        tf.layers.dense({units: 16, activation: 'tanh'}),
+
+        // Result
+        tf.layers.dense({units: 16, activation: 'sigmoid'}),
       ],
     })
   }

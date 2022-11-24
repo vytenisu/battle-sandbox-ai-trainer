@@ -52,30 +52,30 @@ export class Network {
     this.model = tf.sequential({
       name: 'bot',
       layers: [
-        // Compression
-        tf.layers.conv2d({
-          name: 'analyzeCells1',
-          kernelSize: 1,
-          filters: NETWORK_CHANNELS,
-          strides: 1,
-          activation: 'relu',
-          dtype: 'float32',
-          inputShape: [50, 50, NETWORK_CHANNELS],
-        }),
-        tf.layers.batchNormalization(),
-        tf.layers.reLU(),
-        tf.layers.dropout({rate: 0.1}),
-        tf.layers.conv2d({
-          name: 'analyzeCells2',
-          kernelSize: 1,
-          filters: 11,
-          strides: 1,
-          activation: 'relu',
-          dtype: 'float32',
-        }),
-        tf.layers.batchNormalization(),
-        tf.layers.reLU(),
-        tf.layers.dropout({rate: 0.1}),
+        // Cell layers
+        // tf.layers.conv2d({
+        //   name: 'analyzeCells1',
+        //   kernelSize: 1,
+        //   filters: NETWORK_CHANNELS,
+        //   strides: 1,
+        //   activation: 'relu',
+        //   dtype: 'float32',
+        //   inputShape: [50, 50, NETWORK_CHANNELS],
+        // }),
+        // tf.layers.batchNormalization(),
+        // tf.layers.reLU(),
+        // // tf.layers.dropout({rate: 0.1}),
+        // tf.layers.conv2d({
+        //   name: 'analyzeCells2',
+        //   kernelSize: 1,
+        //   filters: 11,
+        //   strides: 1,
+        //   activation: 'relu',
+        //   dtype: 'float32',
+        // }),
+        // tf.layers.batchNormalization(),
+        // tf.layers.reLU(),
+        // tf.layers.dropout({rate: 0.1}),
 
         // 2D map interpretation
         tf.layers.conv2d({
@@ -88,7 +88,7 @@ export class Network {
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
-        tf.layers.dropout({rate: 0.1}),
+        // tf.layers.dropout({rate: 0.1}),
         tf.layers.maxPool2d({poolSize: 2, strides: 2, padding: 'same'}),
         tf.layers.conv2d({
           name: 'c2',
@@ -100,7 +100,7 @@ export class Network {
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
-        tf.layers.dropout({rate: 0.1}),
+        // tf.layers.dropout({rate: 0.1}),
         tf.layers.maxPool2d({poolSize: 5, strides: 5, padding: 'same'}),
         tf.layers.conv2d({
           name: 'c3',
@@ -115,13 +115,13 @@ export class Network {
         tf.layers.flatten(),
 
         // Generalization
-        tf.layers.dropout({rate: 0.2}),
+        // tf.layers.dropout({rate: 0.2}),
 
         // Decision making
-        tf.layers.dense({units: 16, activation: 'sigmoid'}),
-        tf.layers.dropout({rate: 0.5}),
-        tf.layers.dense({units: 16, activation: 'sigmoid'}),
-        tf.layers.dropout({rate: 0.5}),
+        tf.layers.dense({units: 40, activation: 'sigmoid'}),
+        tf.layers.dense({units: 40, activation: 'sigmoid'}),
+        tf.layers.dense({units: 40, activation: 'sigmoid'}),
+        tf.layers.dense({units: 40, activation: 'sigmoid'}),
 
         // Result
         // tf.layers.dense({units: 16, activation: 'sigmoid'}),

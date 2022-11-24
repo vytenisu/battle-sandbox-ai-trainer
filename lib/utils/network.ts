@@ -54,9 +54,20 @@ export class Network {
       layers: [
         // Compression
         tf.layers.conv2d({
-          name: 'compress',
+          name: 'analyzeCells1',
           kernelSize: 1,
-          filters: 6,
+          filters: 11,
+          strides: 1,
+          activation: 'relu',
+          dtype: 'float32',
+          inputShape: [50, 50, NETWORK_CHANNELS],
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.reLU(),
+        tf.layers.conv2d({
+          name: 'analyzeCells1',
+          kernelSize: 1,
+          filters: 11,
           strides: 1,
           activation: 'relu',
           dtype: 'float32',
@@ -101,13 +112,12 @@ export class Network {
         tf.layers.dropout({rate: 0.3}),
 
         // Decision making
-        tf.layers.dense({units: 16, activation: 'tanh'}),
-        tf.layers.dense({units: 16, activation: 'tanh'}),
-        tf.layers.dense({units: 16, activation: 'tanh'}),
-        tf.layers.dense({units: 16, activation: 'tanh'}),
+        tf.layers.dense({units: 16, activation: 'sigmoid'}),
+        tf.layers.dense({units: 16, activation: 'sigmoid'}),
 
         // Result
-        tf.layers.dense({units: 16, activation: 'sigmoid'}),
+        // tf.layers.dense({units: 16, activation: 'sigmoid'}),
+        tf.layers.dense({units: 16, activation: 'softmax'}),
       ],
     })
   }
@@ -115,8 +125,8 @@ export class Network {
   private compileModel() {
     this.model.compile({
       optimizer: tf.train.adam(0.001),
-      // loss: tf.metrics.categoricalCrossentropy,
-      loss: tf.metrics.meanSquaredError,
+      loss: tf.metrics.categoricalCrossentropy,
+      // loss: tf.metrics.meanSquaredError,
       metrics: ['accuracy'],
     })
 

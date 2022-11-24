@@ -65,7 +65,7 @@ export class Network {
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
         tf.layers.conv2d({
-          name: 'analyzeCells1',
+          name: 'analyzeCells2',
           kernelSize: 1,
           filters: 11,
           strides: 1,

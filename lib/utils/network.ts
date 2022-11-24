@@ -49,134 +49,74 @@ export class Network {
     info(`Loaded model from ${modelPath}`)
   }
 
-  private createSmartNormalization(input: TensorFlow.Tensor) {
-    const batch = tf.layers.batchNormalization().apply(input)
-    return tf.layers.reLU().apply(batch)
-  }
-
-  private createResidualBlock(input: TensorFlow.Tensor4D, filters: number) {
-    const primaryFilter = tf.layers
-      .separableConv2d({
-        kernelSize: 5,
-        filters,
-        activation: 'relu',
-        strides: 1,
-        padding: 'same',
-        depthwiseInitializer: 'glorotNormal',
-        pointwiseInitializer: 'glorotNormal',
-      })
-      .apply(input)
-
-    const normalizedPrimaryFilter = this.createSmartNormalization(
-      primaryFilter as TensorFlow.Tensor,
-    )
-
-    const secondaryFilter = tf.layers
-      .separableConv2d({
-        kernelSize: 5,
-        filters,
-        activation: 'relu',
-        padding: 'same',
-        depthwiseInitializer: 'glorotNormal',
-        pointwiseInitializer: 'glorotNormal',
-      })
-      .apply(normalizedPrimaryFilter)
-
-    const dropout = tf.layers.dropout({rate: 0.3}).apply(secondaryFilter)
-
-    const normalizedSecondaryFilter = this.createSmartNormalization(
-      dropout as TensorFlow.Tensor,
-    )
-
-    const residualLayer = tf.layers
-      .add()
-      .apply([
-        primaryFilter as SymbolicTensor,
-        normalizedSecondaryFilter as SymbolicTensor,
-      ])
-
-    return residualLayer as Tensor4D
-  }
-
   private createModel() {
-    const inputs = tf.input({shape: [50, 50, NETWORK_CHANNELS]})
-
-    const initialFilter = tf.layers
-      .conv2d({
-        kernelSize: 5,
-        filters: 16,
-        strides: 1,
-        activation: 'relu',
-        kernelInitializer: 'glorotNormal',
-      })
-      .apply(inputs)
-
-    const initialConvolution = tf.layers
-      .maxPooling2d({
-        poolSize: 2,
-        strides: 1,
-      })
-      .apply(this.createSmartNormalization(initialFilter as Tensor)) as Tensor4D
-
-    const residual1 = this.createResidualBlock(initialConvolution, 16)
-
-    const residual2 = this.createResidualBlock(residual1, 32)
-
-    const finalConvolution = tf.layers
-      .avgPool2d({
-        poolSize: 5,
-        strides: 1,
-      })
-      .apply(residual2)
-
-    const flatten = tf.layers.flatten().apply(finalConvolution)
-
-    const dropout = tf.layers.dropout({rate: 0.5}).apply(flatten)
-
-    const outputs = tf.layers
-      .dense({
-        units: 16,
-        kernelInitializer: 'glorotNormal',
-        activation: 'softmax',
-      })
-      .apply(dropout) as SymbolicTensor
-
-    info('Created new model')
-
-    this.model = tf.model({inputs, outputs})
-
-    // ResNET-like
-
-    // this.model = tf.sequential({
-    //   name: 'bot',
-    //   layers: [
-    //     tf.layers.conv2d({
-    //       kernelSize: 5,
-    //       filters: 4,
-    //       activation: 'tanh',
-    //       dtype: 'float32',
-    //       inputShape: [50, 50, NETWORK_CHANNELS],
-    //     }),
-    //     tf.layers.maxPool2d({poolSize: [2, 2], strides: [1, 1]}),
-    //     tf.layers.conv2d({
-    //       kernelSize: 5,
-    //       filters: 16,
-    //       activation: 'tanh',
-    //     }),
-    //     tf.layers.flatten(),
-    //     tf.layers.dense({
-    //       units: 16,
-    //       kernelInitializer: 'varianceScaling',
-    //       activation: 'softmax',
-    //     }),
-    //   ],
-    // })
+    this.model = tf.sequential({
+      name: 'bot',
+      layers: [
+        tf.layers.conv2d({
+          name: 'c1',
+          kernelSize: 3,
+          filters: 8,
+          strides: 1,
+          activation: 'elu',
+          dtype: 'float32',
+          inputShape: [50, 50, NETWORK_CHANNELS],
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.reLU(),
+        tf.layers.avgPool2d({poolSize: 5, strides: 2}),
+        tf.layers.conv2d({
+          name: 'c2',
+          kernelSize: 3,
+          filters: 32,
+          strides: 1,
+          activation: 'elu',
+          dtype: 'float32',
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.reLU(),
+        tf.layers.avgPool2d({poolSize: 4, strides: 2}),
+        tf.layers.conv2d({
+          name: 'c3',
+          kernelSize: 5,
+          filters: 38,
+          strides: 1,
+          activation: 'elu',
+          dtype: 'float32',
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.reLU(),
+        tf.layers.flatten(),
+        tf.layers.dropout({rate: 0.3}),
+        tf.layers.dense({
+          units: 16,
+          activation: 'tanh',
+        }),
+        tf.layers.dense({
+          units: 16,
+          activation: 'tanh',
+        }),
+        tf.layers.dense({
+          units: 16,
+          activation: 'tanh',
+        }),
+        tf.layers.dense({
+          units: 16,
+          activation: 'tanh',
+        }),
+        tf.layers.dense({
+          units: 16,
+          activation: 'sigmoid',
+        }),
+      ],
+    })
   }
 
   private compileModel() {
     this.model.compile({
       optimizer: tf.train.adam(0.001),
-      loss: tf.metrics.categoricalCrossentropy,
+      // loss: tf.metrics.categoricalCrossentropy,
+      loss: tf.metrics.meanSquaredError,
       metrics: ['accuracy'],
     })
 

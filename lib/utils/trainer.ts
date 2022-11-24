@@ -110,7 +110,7 @@ export const trainNetwork = async ({
       for (const [metricName, metricValue] of Object.entries(metrics)) {
         appendFileSync(
           resolve(modelPath, `${metricName}.log`),
-          `\n${new Date().toISOString} --- ${metricValue}`,
+          `\n${new Date().toISOString()} --- ${metricValue}`,
         )
       }
 

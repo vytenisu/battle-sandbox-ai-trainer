@@ -56,7 +56,7 @@ export class Network {
         tf.layers.conv2d({
           name: 'analyzeCells1',
           kernelSize: 1,
-          filters: 11,
+          filters: NETWORK_CHANNELS,
           strides: 1,
           activation: 'relu',
           dtype: 'float32',
@@ -64,6 +64,7 @@ export class Network {
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
+        tf.layers.dropout({rate: 0.1}),
         tf.layers.conv2d({
           name: 'analyzeCells2',
           kernelSize: 1,
@@ -71,36 +72,41 @@ export class Network {
           strides: 1,
           activation: 'relu',
           dtype: 'float32',
-          inputShape: [50, 50, NETWORK_CHANNELS],
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
+        tf.layers.dropout({rate: 0.1}),
 
         // 2D map interpretation
         tf.layers.conv2d({
           name: 'c1',
           kernelSize: 3,
+          padding: 'same',
           filters: 8,
           strides: 1,
           activation: 'relu',
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
-        tf.layers.avgPool2d({poolSize: 5, strides: 2}),
+        tf.layers.dropout({rate: 0.1}),
+        tf.layers.maxPool2d({poolSize: 2, strides: 2, padding: 'same'}),
         tf.layers.conv2d({
           name: 'c2',
           kernelSize: 3,
-          filters: 32,
+          padding: 'same',
+          filters: 16,
           strides: 1,
           activation: 'relu',
         }),
         tf.layers.batchNormalization(),
         tf.layers.reLU(),
-        tf.layers.avgPool2d({poolSize: 4, strides: 2}),
+        tf.layers.dropout({rate: 0.1}),
+        tf.layers.maxPool2d({poolSize: 5, strides: 5, padding: 'same'}),
         tf.layers.conv2d({
           name: 'c3',
-          kernelSize: 5,
-          filters: 38,
+          kernelSize: 3,
+          padding: 'same',
+          filters: 32,
           strides: 1,
           activation: 'relu',
         }),
@@ -109,17 +115,23 @@ export class Network {
         tf.layers.flatten(),
 
         // Generalization
-        tf.layers.dropout({rate: 0.3}),
+        tf.layers.dropout({rate: 0.2}),
 
         // Decision making
         tf.layers.dense({units: 16, activation: 'sigmoid'}),
+        tf.layers.dropout({rate: 0.5}),
         tf.layers.dense({units: 16, activation: 'sigmoid'}),
+        tf.layers.dropout({rate: 0.5}),
 
         // Result
         // tf.layers.dense({units: 16, activation: 'sigmoid'}),
         tf.layers.dense({units: 16, activation: 'softmax'}),
       ],
     })
+
+    // DEBUG
+    // this.model.summary()
+    // process.exit(1)
   }
 
   private compileModel() {

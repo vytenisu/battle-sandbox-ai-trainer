@@ -14,7 +14,7 @@ info(`by ${packageInfo.author.name}`)
 
   await trainNetwork({
     modelPath: MODEL_PATH,
-    trainingDataSize: 100,
+    trainingDataSize: 300,
     validationDataSize: 3000,
     batchSize: 1,
     epochs: 1,

@@ -1,4 +1,4 @@
-import {ISample} from './../types/network'
+import {INormalizedSample, ISample} from './../types/network'
 import {ECommand} from './../types/commands'
 import {getCreepById, getEnemyCreeps, getMyCreeps} from './map'
 import {Position} from './position'
@@ -15,6 +15,7 @@ import {appendFileSync} from 'fs'
 import {resolve} from 'path'
 import {ICreep} from '../types/simplified-screeps'
 import {resetMap} from '../services/controller'
+import {balanceSamples} from './normalizer'
 
 const getNonDeterministicNeuroBot = (
   net: Network,
@@ -117,7 +118,8 @@ export const generateCopySamples = async (
   amount: number,
   logContext: string,
   verbose = 1,
-) => {
+  additionalUnbalancedSamples: ISample[] = [],
+): Promise<ISample[]> => {
   let samples = []
 
   const bar = verbose
@@ -158,6 +160,21 @@ export const generateCopySamples = async (
 
   if (verbose) {
     bar.terminate()
+  }
+
+  const unbalancedSamples = samples
+  samples = balanceSamples([...samples, ...additionalUnbalancedSamples])
+
+  if (!samples.length) {
+    warn('No samples were generated! Will retry')
+
+    return await generateCopySamples(
+      getCreepCommand,
+      amount,
+      logContext,
+      verbose,
+      unbalancedSamples,
+    )
   }
 
   return samples
@@ -229,6 +246,44 @@ export const generateSamples = async (
   }
 
   return filteredSamples
+}
+
+export const describeSamples = (normalizedSamples: INormalizedSample[]) => {
+  let amounts: {[index: string]: number} = {}
+
+  const commandMap: {[i: number]: string} = {
+    0: 'moveTop',
+    1: 'moveTopRight',
+    2: 'moveRight',
+    3: 'moveBottomRight',
+    4: 'moveBottom',
+    5: 'moveBottomLeft',
+    6: 'moveLeft',
+    7: 'moveTopLeft',
+    8: 'attackTop',
+    9: 'attackTopRight',
+    10: 'attackRight',
+    11: 'attackBottomRight',
+    12: 'attackBottom',
+    13: 'attackBottomLeft',
+    14: 'attackLeft',
+    15: 'attackTopLeft',
+  }
+
+  normalizedSamples.forEach(({ys}) => {
+    ys.forEach((y, i) => {
+      amounts[commandMap[i]] = amounts[commandMap[i]] ?? 0
+      amounts[commandMap[i]] += y
+    })
+
+    if (ys.every(y => !y)) {
+      amounts['-'] = amounts['-'] ?? 0
+      amounts['-']++
+    }
+  })
+
+  info(`Sample distribution: ${Object.values(amounts).join(', ')}`)
+  info(`Generated samples: ${normalizedSamples.length}`)
 }
 
 const generateSample = async (

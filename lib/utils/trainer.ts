@@ -4,7 +4,11 @@ import {BaselineBot, getCreepCommand} from './baseline-bot'
 import {Network} from './network'
 import {NeuroBot} from './neuro-bot'
 import {balanceSamples, normalizeSample} from './normalizer'
-import {generateCopySamples, generateSamples} from './sample-generator'
+import {
+  describeSamples,
+  generateCopySamples,
+  generateSamples,
+} from './sample-generator'
 import {resolve} from 'path'
 import {appendFileSync, readFileSync, writeFileSync} from 'fs'
 import {info} from 'winston'
@@ -58,15 +62,15 @@ export const trainNetwork = async ({
     try {
       validationSamples = JSON.parse(readFileSync(cacheFilePath, 'utf8'))
     } catch (e) {
-      const unbalancedValidationSamples = await generateCopySamples(
+      validationSamples = await generateCopySamples(
         getCreepCommand,
         validationDataSize,
         'validation',
         1,
       )
 
-      validationSamples = balanceSamples(unbalancedValidationSamples)
-      info('Generated validation samples: ', validationSamples.length)
+      info('Validation sample information:')
+      describeSamples(trainingSamples.map(normalizeSample))
 
       writeFileSync(cacheFilePath, JSON.stringify(validationSamples), 'utf8')
     }
@@ -95,6 +99,9 @@ export const trainNetwork = async ({
 
   const normalizedTrainingSamples = trainingSamples.map(normalizeSample)
   const normalizedValidationSamples = validationSamples.map(normalizeSample)
+
+  info('Training sample information: ')
+  describeSamples(normalizedTrainingSamples)
 
   const trainingData = net.createDataset(normalizedTrainingSamples, batchSize)
   const validationData = net.createDataset(

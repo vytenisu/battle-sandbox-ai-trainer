@@ -59,14 +59,13 @@ export const normalize = (
 
       const swamp = Number(isSwamp(pos, map))
       const wall = Number(isWall(pos, map))
-      const plain = Number(!swamp && !wall)
 
       let attackScore = 0
       let moveScore = 0
       let control = 0
       let friendly = 0
-      let fatigue = 0
       let ticksToLive = 0
+      let hits = 0
 
       const creep = getCreepByPosition(pos, map)
 
@@ -89,22 +88,25 @@ export const normalize = (
 
         friendly = Number(creep.my)
 
-        fatigue = normalizeNumber(creep.fatigue, getMaxFatigue())
+        hits = normalizeNumber(creep.hits, creep.hitsMax)
         ticksToLive = normalizeNumber(creep.ticksToLive, CREEP_LIFE_TIME)
       }
 
       const cell: INormalizedCell = [
-        plain,
         swamp,
         wall,
-        control,
-        friendly,
-        friendly ? 0 : 1,
-        creep ? 0 : 1,
-        attackScore,
-        moveScore,
-        fatigue,
-        ticksToLive,
+        control ? attackScore : 0,
+        control ? moveScore : 0,
+        control ? hits : 0,
+        control ? ticksToLive : 0,
+        friendly && !control ? attackScore : 0,
+        friendly && !control ? moveScore : 0,
+        friendly && !control ? hits : 0,
+        friendly && !control ? ticksToLive : 0,
+        !friendly ? attackScore : 0,
+        !friendly ? attackScore : 0,
+        !friendly ? hits : 0,
+        !friendly ? ticksToLive : 0,
       ]
 
       normalizedFeed[y] = normalizedFeed[y] ? normalizedFeed[y] : []

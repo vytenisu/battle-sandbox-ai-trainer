@@ -1,28 +1,25 @@
 import type TensorFlow from '@tensorflow/tfjs-node-gpu'
-import {Mode} from 'mkdirp'
 import {ICommand} from './commands'
 import {IFeed} from './feed'
 
 export type INormalizedFeed = INormalizedRows[]
-
 export type INormalizedRows = INormalizedCell[]
 
-// Required filters = 6 (terrain, ownership, danger, movement, support, life )
 export type INormalizedCell = [
-  // enum
-  plain: number, // boolean
-  swamp: number, // boolean
-  wall: number, // boolean
-  // enum
-  me: number, // boolean
-  friend: number, // boolean
-  enemy: number, // boolean
-  noCreep: number, // boolean
-  // normalized integers
-  attackScore: number,
-  moveScore: number,
-  fatigue: number,
-  ticksToLive: number,
+  swamp: number,
+  wall: number,
+  myAttackScore: number,
+  myMoveScore: number,
+  myHits: number,
+  myTicksToLive: number,
+  friendAttackScore: number,
+  friendMoveScore: number,
+  friendHits: number,
+  friendTicksToLive: number,
+  enemyAttackScore: number,
+  enemyMoveScore: number,
+  enemyHits: number,
+  enemyTicksToLive: number,
 ]
 
 export type IRawOutput = [

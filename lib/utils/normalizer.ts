@@ -92,7 +92,12 @@ export const normalize = (
         ticksToLive = normalizeNumber(creep.ticksToLive, CREEP_LIFE_TIME)
       }
 
+      const normalizedX = normalizeNumber(x, map.room.width)
+      const normalizedY = normalizeNumber(y, map.room.height)
+
       const cell: INormalizedCell = [
+        normalizedX,
+        normalizedY,
         swamp,
         wall,
         control ? attackScore : 0,

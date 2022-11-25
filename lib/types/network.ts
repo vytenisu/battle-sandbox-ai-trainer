@@ -6,6 +6,8 @@ export type INormalizedFeed = INormalizedRows[]
 export type INormalizedRows = INormalizedCell[]
 
 export type INormalizedCell = [
+  x: number,
+  y: number,
   swamp: number,
   wall: number,
   myAttackScore: number,

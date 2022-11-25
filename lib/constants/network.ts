@@ -1,1 +1,1 @@
-export const NETWORK_CHANNELS = 11
+export const NETWORK_CHANNELS = 14

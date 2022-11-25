@@ -18,8 +18,8 @@ info(`by ${packageInfo.author.name}`)
 
   await trainNetwork({
     modelPath: MODEL_PATH,
-    trainingDataSize: 300,
-    validationDataSize: 3000,
+    trainingDataSize: 30000,
+    validationDataSize: 30000,
     batchSize: 1,
     epochs: 1,
     patience: 1,
@@ -40,5 +40,6 @@ info(`by ${packageInfo.author.name}`)
 
   // await promise
 
-  // await runBattle(NeuroBot(net), BaselineBot, CREEP_LIFE_TIME, 1000)
+  // // await runBattle(NeuroBot(net), BaselineBot, CREEP_LIFE_TIME, 1000)
+  // await runBattle(NeuroBot(net), NeuroBot(net), CREEP_LIFE_TIME, 1000)
 })()

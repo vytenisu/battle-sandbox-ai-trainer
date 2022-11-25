@@ -62,6 +62,7 @@ export class Network {
         }),
         tf.layers.flatten(),
         tf.layers.dense({units: 5 * 5 + 8, activation: 'relu'}),
+        tf.layers.dense({units: 5 * 5 + 8, activation: 'relu'}),
         tf.layers.dense({units: 16, activation: 'softmax'}),
       ],
     })
@@ -87,8 +88,8 @@ export class Network {
     map: IFeed,
     controlledCreepId: string,
   ): ICommand {
-    const flat = tf.reshape(input, [50 * 50 * NETWORK_CHANNELS])
-    const batched = tf.reshape(flat, [1, 50, 50, NETWORK_CHANNELS])
+    const flat = tf.reshape(input, [5 * 5 * NETWORK_CHANNELS])
+    const batched = tf.reshape(flat, [1, 5, 5, NETWORK_CHANNELS])
 
     let resultTensor = this.model.predict(batched) as TensorFlow.Tensor
     const resultArray = Array.from(resultTensor.dataSync())

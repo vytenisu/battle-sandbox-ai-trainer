@@ -6,22 +6,28 @@ export type INormalizedFeed = INormalizedRows[]
 export type INormalizedRows = INormalizedCell[]
 
 export type INormalizedCell = [
-  x: number,
-  y: number,
-  swamp: number,
-  wall: number,
+  swampX: number,
+  swampY: number,
+  wallX: number,
+  wallY: number,
   myAttackScore: number,
   myMoveScore: number,
   myHits: number,
   myTicksToLive: number,
+  myX: number,
+  myY: number,
   friendAttackScore: number,
   friendMoveScore: number,
   friendHits: number,
   friendTicksToLive: number,
+  friendX: number,
+  friendY: number,
   enemyAttackScore: number,
   enemyMoveScore: number,
   enemyHits: number,
   enemyTicksToLive: number,
+  enemyX: number,
+  enemyY: number,
 ]
 
 export type IRawOutput = [

@@ -92,26 +92,33 @@ export const normalize = (
         ticksToLive = normalizeNumber(creep.ticksToLive, CREEP_LIFE_TIME)
       }
 
-      const normalizedX = normalizeNumber(x, map.room.width)
-      const normalizedY = normalizeNumber(y, map.room.height)
+      // Experiment: 0 means nothing here. 0.5 means 0, 1 means max
+      const normalizedX = normalizeNumber(x, map.room.width) / 2 + 0.5
+      const normalizedY = normalizeNumber(y, map.room.height) / 2 + 0.5
 
       const cell: INormalizedCell = [
-        normalizedX,
-        normalizedY,
-        swamp,
-        wall,
+        swamp ? normalizedX : 0,
+        swamp ? normalizedY : 0,
+        wall ? normalizedX : 0,
+        wall ? normalizedY : 0,
         control ? attackScore : 0,
         control ? moveScore : 0,
         control ? hits : 0,
         control ? ticksToLive : 0,
+        control ? normalizedX : 0,
+        control ? normalizedY : 0,
         friendly && !control ? attackScore : 0,
         friendly && !control ? moveScore : 0,
         friendly && !control ? hits : 0,
         friendly && !control ? ticksToLive : 0,
+        friendly && !control ? normalizedX : 0,
+        friendly && !control ? normalizedY : 0,
         !friendly ? attackScore : 0,
         !friendly ? attackScore : 0,
         !friendly ? hits : 0,
         !friendly ? ticksToLive : 0,
+        !friendly ? normalizedX : 0,
+        !friendly ? normalizedY : 0,
       ]
 
       normalizedFeed[y] = normalizedFeed[y] ? normalizedFeed[y] : []

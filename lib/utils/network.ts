@@ -55,14 +55,13 @@ export class Network {
         tf.layers.conv2d({
           kernelSize: 3,
           padding: 'same',
-          filters: 9, // 8 filters for attack vectors, 1 for terrain
+          filters: 9, // 8 filters for attack vectors, 1 for untouched
           strides: 1,
           activation: 'relu',
           inputShape: [5, 5, NETWORK_CHANNELS],
         }),
         tf.layers.flatten(),
-        tf.layers.dense({units: 5 * 5 + 8, activation: 'relu'}),
-        tf.layers.dense({units: 5 * 5 + 8, activation: 'relu'}),
+        tf.layers.dense({units: 1000, activation: 'relu'}),
         tf.layers.dense({units: 16, activation: 'softmax'}),
       ],
     })
